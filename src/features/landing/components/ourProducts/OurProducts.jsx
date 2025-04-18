@@ -1,8 +1,21 @@
 import React from 'react'
 
-const OurProducts = () => {
+const OurProducts = ({ products }) => {
   return (
-    <div>OurProducts</div>
+    <section>
+      <h2>Productos</h2>
+      <div>
+        {products.map((product) => (
+          <div key={product.id}>
+            <img src={product.imageUrl} alt={product.name} style={{ width: '100px' }}/>
+            <h3>{product.name}</h3>
+            <p>{product.description}</p>
+            <p><strong>Precio:</strong> ${product.price}</p>
+            <p><strong>Stock:</strong> {product.stock}</p>
+          </div>
+        ))}
+      </div>
+    </section>
   )
 }
 
