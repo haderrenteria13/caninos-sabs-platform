@@ -1,4 +1,3 @@
-import React from 'react'
 import axios from 'axios'
 
 const BASE_URL = 'https://caninos-sabs-backend-production.up.railway.app'

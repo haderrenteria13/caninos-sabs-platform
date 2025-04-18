@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import useGetAllCategories from './hooks/useGetAllCategories'
+import useGetCategories from './hooks/useGetCategories'
 import useDeleteCategory from './hooks/useDeleteCategories'
 import FormCategories from './components/FormCategories'
 import EditCategory from './components/EditCategories'
 import categoriesApi from './services/categoriesApi'
 
 const Categories = () => {
-  const { categories: initialCategories, error, loading } = useGetAllCategories()
+  const { categories: initialCategories, error, loading } = useGetCategories()
   const { deleteCategory, error: deleteError } = useDeleteCategory()
   const [categories, setCategories] = useState([])
   const [deletingId, setDeletingId] = useState(null)
@@ -51,9 +51,9 @@ const Categories = () => {
       <FormCategories
         onSubmit={async (formData) => {
           try {
-            await categoriesApi.create(formData)
+            const newCategory = await categoriesApi.create(formData)
             alert('Categoría creada con éxito')
-            setCategories([...categories, formData])
+            setCategories([...categories, newCategory])
           } catch (error) {
             alert(error.message)
           }

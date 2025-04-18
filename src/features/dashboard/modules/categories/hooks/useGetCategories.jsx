@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import categoriesApi from '../services/categoriesApi'
 
-const useGetAllCategories = () => {
+const useGetCategories = () => {
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -28,4 +28,4 @@ const useGetAllCategories = () => {
   }
 }
 
-export default useGetAllCategories
+export default useGetCategories

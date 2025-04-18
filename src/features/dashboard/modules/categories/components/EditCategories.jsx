@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import categoriesApi from '../services/categoriesApi'
 import FormCategories from './FormCategories'
 
 const EditCategory = ({ categoryId, onSuccess }) => {
-    const [category, setCategory] = React.useState(null)
+    const [category, setCategory] = useState(null)
 
-    React.useEffect(() => {
+    useEffect(() => {
         const fetchCategory = async () => {
             try {
                 const data = await categoriesApi.getForID(categoryId)
@@ -14,7 +14,9 @@ const EditCategory = ({ categoryId, onSuccess }) => {
                 alert('Error al cargar la categoría')
             }
         }
+
         fetchCategory()
+        
     }, [categoryId])
 
     const handleEdit = async (formData) => {
