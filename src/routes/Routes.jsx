@@ -9,6 +9,7 @@ import Roles from "../features/dashboard/modules/roles/Roles";
 import Companies from "../features/dashboard/modules/companies/Companies";
 import PrivateRoutes from "./PrivateRoutes";
 import NotFound from "../features/notFound/NotFound";
+import Users from "../features/dashboard/modules/users/Users";
 
 const Routes = createBrowserRouter([
     {
@@ -21,7 +22,7 @@ const Routes = createBrowserRouter([
     },
     {
         path: "/login",
-        element: <Auth/>
+        element: <Auth />
     },
     {
         path: "/dashboard",
@@ -46,6 +47,10 @@ const Routes = createBrowserRouter([
             {
                 path: "categories",
                 element: <Categories />
+            },
+            {
+                path: "users",
+                element: <Users />
             }
         ]
     },
