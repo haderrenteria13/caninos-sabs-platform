@@ -67,7 +67,8 @@ const Products = () => {
             <p>Cantidad: {product.count}</p>
             <p>Stock: {product.stock}</p>
             <p>Precio: ${product.price}</p>
-            <p>Categoría ID: {product.categoryId}</p>
+            <p>Categoría: {product.categoryName}</p>
+            <p>Descripción de la Categoría: {product.categoryDescription}</p>
             <img src={product.imageUrl} alt={product.name} style={{ width: '100px' }} />
             <button onClick={() => handleDelete(product.id)} disabled={deletingId === product.id}>
               {deletingId === product.id ? 'Eliminando...' : 'Eliminar'}

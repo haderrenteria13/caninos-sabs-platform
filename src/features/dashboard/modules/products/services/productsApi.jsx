@@ -23,7 +23,11 @@ const productsApi = {
           'Content-Type': 'application/json',
         },
       })
-      return response.data.products
+      return response.data.products.map(product => ({
+        ...product,
+        categoryName: product.category?.name || 'Sin categoría',
+        categoryDescription: product.category?.description || 'Sin descripción',
+      }))
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error al obtener los productos')
     }
@@ -36,7 +40,7 @@ const productsApi = {
           'Content-Type': 'application/json',
         },
       })
-      return response.data
+      return response.data.product
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Error al obtener el producto')
     }

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
+import useGetCategories from '../../categories/hooks/useGetCategories'
 
 const FormProducts = ({ product = null, onSubmit }) => {
     const [formData, setFormData] = useState({ name: '', description: '', count: 0, stock: 0, price: 0.0, imageUrl: '', categoryId: '' })
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+    const { categories, loading: loadingCategories, error: errorCategories } = useGetCategories()
 
     useEffect(() => {
         if (product) {
@@ -58,8 +60,21 @@ const FormProducts = ({ product = null, onSubmit }) => {
                 <input type="text" name="imageUrl" value={formData.imageUrl} onChange={handleChange} required />
             </div>
             <div>
-                <label>Categoría ID:</label>
-                <input type="number" name="categoryId" value={formData.categoryId} onChange={handleChange} required />
+                <label>Categoría:</label>
+                {loadingCategories ? (
+                    <p>Cargando categorías...</p>
+                ) : errorCategories ? (
+                    <p>Error al cargar categorías: {errorCategories}</p>
+                ) : (
+                    <select name="categoryId" value={formData.categoryId} onChange={handleChange} required>
+                        <option value="" disabled>Seleccione una categoría</option>
+                        {categories.map((category) => (
+                            <option key={category.id} value={category.id}>
+                                {category.name}
+                            </option>
+                        ))}
+                    </select>
+                )}
             </div>
             <button type="submit" disabled={loading}>
                 {loading ? (product ? 'Actualizando...' : 'Creando...') : (product ? 'Actualizar Producto' : 'Crear Producto')}
