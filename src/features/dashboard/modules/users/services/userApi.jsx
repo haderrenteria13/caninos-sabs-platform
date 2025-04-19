@@ -16,19 +16,48 @@ const usersApi = {
         }
     },
 
+    delete: async (id) => {
+        try {
+            const response = await axios.delete(`${BASE_URL}/users/${id}`)
+            return response.data
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error al eliminar el usuario')
+        }
+    },
+    
+
     getAll: async () => {
         try {
-            const response = await axios.get(`${BASE_URL}/users`, {
+            const response = await axios.get(`${BASE_URL}/users`)
+            return response.data
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error al obtener los usuarios')
+        }
+    },
+
+    // ✅ Obtener un usuario por ID
+    getForID: async (id) => {
+        try {
+            const response = await axios.get(`${BASE_URL}/users/${id}`)
+            return response.data
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error al obtener el usuario')
+        }
+    },
+
+    // ✅ Actualizar un usuario
+    update: async (id, data) => {
+        try {
+            const response = await axios.put(`${BASE_URL}/users/${id}`, data, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             })
             return response.data
         } catch (error) {
-            throw new Error(error.response?.data?.message || 'Error al obtener los usuarios')
+            throw new Error(error.response?.data?.message || 'Error al actualizar el usuario')
         }
     },
 }
 
 export default usersApi
-
