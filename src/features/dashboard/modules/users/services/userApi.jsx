@@ -35,7 +35,6 @@ const usersApi = {
         }
     },
 
-    // ✅ Obtener un usuario por ID
     getForID: async (id) => {
         try {
             const response = await axios.get(`${BASE_URL}/users/${id}`)
@@ -45,7 +44,6 @@ const usersApi = {
         }
     },
 
-    // ✅ Actualizar un usuario
     update: async (id, data) => {
         try {
             const response = await axios.put(`${BASE_URL}/users/${id}`, data, {
