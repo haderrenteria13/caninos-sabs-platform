@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import categoriesApi from '../services/categoriesApi'
 import FormCategories from './FormCategories'
+import { toast } from 'react-toastify'
 
 const EditCategory = ({ categoryId, onSuccess }) => {
     const [category, setCategory] = useState(null)
@@ -11,7 +12,7 @@ const EditCategory = ({ categoryId, onSuccess }) => {
                 const data = await categoriesApi.getForID(categoryId)
                 setCategory(data)
             } catch (error) {
-                alert('Error al cargar la categoría')
+                toast.error('Error al cargar la categoria')
             }
         }
 
@@ -24,7 +25,7 @@ const EditCategory = ({ categoryId, onSuccess }) => {
             await categoriesApi.update(categoryId, formData)
             if (onSuccess) onSuccess()
         } catch (error) {
-            alert(error.message)
+            toast.error(error.message)
         }
     }
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import productsApi from '../services/productsApi'
 import FormProducts from './FormProducts'
+import { toast } from 'react-toastify'
 
 const EditProducts = ({ productId, onSuccess }) => {
     const [product, setProduct] = useState(null)
@@ -11,7 +12,7 @@ const EditProducts = ({ productId, onSuccess }) => {
                 const data = await productsApi.getForID(productId)
                 setProduct(data)
             } catch (error) {
-                alert('Error al cargar el producto')
+                toast.error('Error al cargar el producto')
             }
         }
 
@@ -24,7 +25,7 @@ const EditProducts = ({ productId, onSuccess }) => {
             await productsApi.update(productId, formData)
             if (onSuccess) onSuccess()
         } catch (error) {
-            alert(error.message)
+            toast.error(error.message)
         }
     }
 

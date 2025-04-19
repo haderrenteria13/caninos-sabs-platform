@@ -18,13 +18,17 @@ const usersApi = {
 
     delete: async (id) => {
         try {
-            const response = await axios.delete(`${BASE_URL}/users/${id}`)
+            const response = await axios.delete(`${BASE_URL}/users/${id}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
             return response.data
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Error al eliminar el usuario')
         }
     },
-    
+
 
     getAll: async () => {
         try {
@@ -37,7 +41,11 @@ const usersApi = {
 
     getForID: async (id) => {
         try {
-            const response = await axios.get(`${BASE_URL}/users/${id}`)
+            const response = await axios.get(`${BASE_URL}/users/${id}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
             return response.data
         } catch (error) {
             throw new Error(error.response?.data?.message || 'Error al obtener el usuario')

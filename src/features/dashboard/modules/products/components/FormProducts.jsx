@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import useGetCategories from '../../categories/hooks/useGetCategories'
+import { toast } from 'react-toastify'
 
 const FormProducts = ({ product = null, onSubmit }) => {
-    const [formData, setFormData] = useState({ name: '', description: '', count: 0, stock: 0, price: 0.0, imageUrl: '', categoryId: '' })
+    const [formData, setFormData] = useState({ name: '', description: '', stock: 0, price: 0.0, imageUrl: '', categoryId: '' })
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
     const { categories, loading: loadingCategories, error: errorCategories } = useGetCategories()
 
     useEffect(() => {
         if (product) {
-            setFormData({ name: product.name, description: product.description, count: product.count, stock: product.stock, price: product.price, imageUrl: product.imageUrl, categoryId: product.categoryId })
+            setFormData({ name: product.name, description: product.description, stock: product.stock, price: product.price, imageUrl: product.imageUrl, categoryId: product.categoryId })
         }
     }, [product])
 
@@ -24,8 +25,14 @@ const FormProducts = ({ product = null, onSubmit }) => {
         setError(null)
         try {
             await onSubmit(formData)
-            alert(product ? 'Producto actualizado con éxito' : 'Producto creado con éxito')
-            setFormData({ name: '', description: '', count: 0, stock: 0, price: 0.0, imageUrl: '', categoryId: '' })
+            {
+                product ? (
+                    toast.done('Producto actualizado con éxito')
+                ) : (
+                    toast.done('Producto creado con éxito')
+                )
+            }
+            setFormData({ name: '', description: '', stock: 0, price: 0.0, imageUrl: '', categoryId: '' })
         } catch (error) {
             setError(error.message)
         } finally {
@@ -42,10 +49,6 @@ const FormProducts = ({ product = null, onSubmit }) => {
             <div>
                 <label>Descripción:</label>
                 <input type="text" name="description" value={formData.description} onChange={handleChange} required />
-            </div>
-            <div>
-                <label>Cantidad:</label>
-                <input type="number" name="count" value={formData.count} onChange={handleChange} required />
             </div>
             <div>
                 <label>Stock:</label>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
 
 const FormCategories = ({ category = null, onSubmit }) => {
     const [formData, setFormData] = useState({ name: '', description: '' })
@@ -22,7 +23,13 @@ const FormCategories = ({ category = null, onSubmit }) => {
         setError(null)
         try {
             await onSubmit(formData)
-            alert(category ? 'Categoría actualizada con éxito' : 'Categoría creada con éxito')
+            {
+                category ? (
+                    toast.done('Categoria actualizada con éxito')
+                ) : (
+                    toast.done('Categoria creada con éxito')
+                )
+            }
             setFormData({ name: '', description: '' })
         } catch (error) {
             setError(error.message)

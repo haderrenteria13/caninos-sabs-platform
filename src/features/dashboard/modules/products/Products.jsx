@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
 import useGetProducts from './hooks/useGetProducts'
 import useDeleteProducts from './hooks/useDeleteProducts'
 import FormProducts from './components/FormProducts'
@@ -22,18 +23,18 @@ const Products = () => {
       setDeletingId(id)
       const success = await deleteProduct(id)
       if (success) {
-        alert('Producto eliminado correctamente')
+        toast.success('Producto eliminado correctamente')
         setProducts((prev) => prev.filter((product) => product.id !== id))
         setDeletingId(null)
       } else {
-        alert('Error al eliminar el producto')
+        toast.error('Error al eliminar el producto')
         setDeletingId(null)
       }
     }
   }
 
   const handleEditSuccess = () => {
-    alert('Producto actualizado con éxito')
+    toast.success('Producto actualizado con éxito')
     setEditingProduct(null)
   }
 
@@ -52,10 +53,10 @@ const Products = () => {
         onSubmit={async (formData) => {
           try {
             const newProduct = await productsApi.create(formData)
-            alert('Producto creado con éxito')
+            toast.success("Producto creado con éxito")
             setProducts([...products, newProduct])
           } catch (error) {
-            alert(error.message)
+            toast.error(error.message)
           }
         }} />
       {deleteError && <p style={{ color: 'red' }}>Error al eliminar el producto: {deleteError}</p>}
@@ -64,7 +65,6 @@ const Products = () => {
           <li key={product.id}>
             <h2>{product.name}</h2>
             <p>Descripción: {product.description}</p>
-            <p>Cantidad: {product.count}</p>
             <p>Stock: {product.stock}</p>
             <p>Precio: ${product.price}</p>
             <p>Categoría: {product.categoryName}</p>

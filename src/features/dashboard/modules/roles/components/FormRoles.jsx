@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
 
 const FormRoles = ({ role = null, onSubmit }) => {
     const [formData, setFormData] = useState({ name: '', description: '' })
@@ -22,7 +23,13 @@ const FormRoles = ({ role = null, onSubmit }) => {
         setError(null)
         try {
             await onSubmit(formData)
-            alert(role ? 'Rol actualizado con éxito' : 'Rol creado con éxito')
+            {
+                role ? (
+                    toast.done('Rol actualizado con éxito')
+                ) : (
+                    toast.done('Rol creado con éxito')
+                )
+            }
             setFormData({ name: '', description: '' })
         } catch (error) {
             setError(error.message)

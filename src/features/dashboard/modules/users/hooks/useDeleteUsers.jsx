@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import usersApi from '../services/usersApi'
+import usersApi from '../services/userApi' 
 
 const useDeleteUsers = () => {
     const [loading, setLoading] = useState(false)

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import usersApi from '../services/usersApi'
-import FormUser from './FormUser' // Este componente es el formulario que usas para editar
+import usersApi from '../services/userApi'
+import FormUser from './FormUsers'
+import { toast } from 'react-toastify'
 
 const EditUser = ({ userId, onSuccess }) => {
     const [user, setUser] = useState(null)
@@ -9,9 +10,12 @@ const EditUser = ({ userId, onSuccess }) => {
         const fetchUser = async () => {
             try {
                 const data = await usersApi.getForID(userId)
-                setUser(data)
+                setUser({
+                    ...data,
+                    companyId: data.companyId || '',
+                })
             } catch (error) {
-                alert('Error al cargar el usuario')
+                toast.error('Error al cargar el usuario')
             }
         }
 
@@ -21,21 +25,21 @@ const EditUser = ({ userId, onSuccess }) => {
     const handleEdit = async (formData) => {
         try {
             await usersApi.update(userId, formData)
-            alert('Usuario actualizado correctamente')
+            toast.done('Usuario actualizado correctamente')
             if (onSuccess) onSuccess()
         } catch (error) {
-            alert(error.message)
+            toast.error(error.message)
         }
-    }
-
-    if (!user) {
-        return <p>Cargando datos del usuario...</p>
     }
 
     return (
         <div>
-            <h2 className="text-xl font-semibold mb-4">Editar Usuario</h2>
-            <FormUser user={user} onSubmit={handleEdit} />
+            <h2>Editar Usuario</h2>
+            {user ? (
+                <FormUser user={user} onSubmit={handleEdit} />
+            ) : (
+                <p>Cargando datos del usuario...</p>
+            )}
         </div>
     )
 }

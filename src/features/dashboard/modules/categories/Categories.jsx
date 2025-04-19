@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
 import useGetCategories from './hooks/useGetCategories'
 import useDeleteCategory from './hooks/useDeleteCategories'
 import FormCategories from './components/FormCategories'
@@ -22,18 +23,18 @@ const Categories = () => {
       setDeletingId(id)
       const success = await deleteCategory(id)
       if (success) {
-        alert('Categoría eliminada correctamente')
+        toast.success('Categoría eliminada correctamente')
         setCategories((prev) => prev.filter((category) => category.id !== id))
         setDeletingId(null)
       } else {
-        alert('Error al eliminar la categoría')
+        toast.error('Error al eliminar la categoría')
         setDeletingId(null)
       }
     }
   }
 
   const handleEditSuccess = () => {
-    alert('Categoría actualizada con éxito')
+    toast.success('Categoría actualizada con éxito')
     setEditingCategory(null)
   }
 
@@ -42,7 +43,7 @@ const Categories = () => {
   }
 
   if (error) {
-    return <p>{error}</p>
+    return <p>{error}</p> 
   }
 
   return (
@@ -52,10 +53,10 @@ const Categories = () => {
         onSubmit={async (formData) => {
           try {
             const newCategory = await categoriesApi.create(formData)
-            alert('Categoría creada con éxito')
+            toast.success('Categoría creada con éxito')
             setCategories([...categories, newCategory])
           } catch (error) {
-            alert(error.message)
+            toast.error(error.message) 
           }
         }} />
       {deleteError && <p style={{ color: 'red' }}>Error al eliminar la categoría: {deleteError}</p>}

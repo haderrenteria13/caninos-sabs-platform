@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
 import useGetRoles from './hooks/useGetRoles'
 import useDeleteRoles from './hooks/useDeleteRoles'
 import FormRoles from './components/FormRoles'
@@ -22,18 +23,18 @@ const Roles = () => {
       setDeletingId(id)
       const success = await deleteRole(id)
       if (success) {
-        alert('Rol eliminado correctamente')
+        toast.success('Rol eliminado correctamente')
         setRoles((prev) => prev.filter((role) => role.id !== id))
         setDeletingId(null)
       } else {
-        alert('Error al eliminar el rol')
+        toast.error('Error al eliminar el rol')
         setDeletingId(null)
       }
     }
   }
 
   const handleEditSuccess = () => {
-    alert('Rol actualizado con éxito')
+    toast.success('Rol actualizado con éxito')
     setEditingRole(null)
   }
 
@@ -42,7 +43,7 @@ const Roles = () => {
   }
 
   if (error) {
-    return <p>{error}</p>
+    return <p>{error}</p> 
   }
 
   return (
@@ -52,13 +53,13 @@ const Roles = () => {
         onSubmit={async (formData) => {
           try {
             const newRole = await rolesApi.create(formData)
-            alert('Rol creado con éxito')
+            toast.success('Rol creado con éxito')
             setRoles([...roles, newRole])
           } catch (error) {
-            alert(error.message)
+            toast.error(error.message) 
           }
         }} />
-      {deleteError && <p style={{ color: 'red' }}>Error al eliminar el rol: {deleteError}</p>}
+      {deleteError && <p style={{ color: 'red' }}>Error al eliminar el rol: {deleteError}</p>} 
       <ul>
         {roles.map((role) => (
           <li key={role.id}>

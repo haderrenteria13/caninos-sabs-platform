@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import rolesApi from '../services/rolesApi'
 import FormRoles from './FormRoles'
+import { toast } from 'react-toastify'
 
 const EditRole = ({ roleId, onSuccess }) => {
     const [role, setRole] = useState(null)
@@ -11,7 +12,7 @@ const EditRole = ({ roleId, onSuccess }) => {
                 const data = await rolesApi.getForID(roleId)
                 setRole(data)
             } catch (error) {
-                alert('Error al cargar el rol')
+                toast.error('Error al cargar el rol')
             }
         }
 
@@ -24,7 +25,7 @@ const EditRole = ({ roleId, onSuccess }) => {
             await rolesApi.update(roleId, formData)
             if (onSuccess) onSuccess()
         } catch (error) {
-            alert(error.message)
+           toast.error(error.message)
         }
     }
 
