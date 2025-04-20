@@ -47,37 +47,79 @@ const Products = () => {
   }
 
   return (
-    <div>
-      <h1>Productos</h1>
-      <FormProducts
-        onSubmit={async (formData) => {
-          try {
-            const newProduct = await productsApi.create(formData)
-            toast.success("Producto creado con éxito")
-            setProducts([...products, newProduct])
-          } catch (error) {
-            toast.error(error.message)
-          }
-        }} />
-      {deleteError && <p style={{ color: 'red' }}>Error al eliminar el producto: {deleteError}</p>}
-      <ul>
-        {products.map((product) => (
-          <li key={product.id}>
-            <h2>{product.name}</h2>
-            <p>Descripción: {product.description}</p>
-            <p>Stock: {product.stock}</p>
-            <p>Precio: ${product.price}</p>
-            <p>Categoría: {product.categoryName}</p>
-            <p>Descripción de la Categoría: {product.categoryDescription}</p>
-            <img src={product.imageUrl} alt={product.name} style={{ width: '100px' }} />
-            <button onClick={() => handleDelete(product.id)} disabled={deletingId === product.id}>
-              {deletingId === product.id ? 'Eliminando...' : 'Eliminar'}
-            </button>
-            <button onClick={() => setEditingProduct(product)}>Editar</button>
-          </li>
-        ))}
-      </ul>
-      {editingProduct && (<EditProducts productId={editingProduct.id} onSuccess={handleEditSuccess} />)}
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Productos</h1>
+      <div className="mb-6">
+        <FormProducts
+          onSubmit={async (formData) => {
+            try {
+              const newProduct = await productsApi.create(formData)
+              toast.success('Producto creado con éxito')
+              setProducts([...products, newProduct])
+            } catch (error) {
+              toast.error(error.message)
+            }
+          }}
+        />
+      </div>
+      {deleteError && (
+        <p className="text-red-500 mb-4">
+          Error al eliminar el producto: {deleteError}
+        </p>
+      )}
+      <div className="overflow-x-auto bg-white rounded-lg shadow-md">
+        <table className="min-w-full border border-gray-200">
+          <thead>
+            <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+              <th className="py-3 px-6 text-left">Nombre</th>
+              <th className="py-3 px-6 text-left">Descripción</th>
+              <th className="py-3 px-6 text-left">Stock</th>
+              <th className="py-3 px-6 text-left">Precio</th>
+              <th className="py-3 px-6 text-left">Categoría</th>
+              <th className="py-3 px-6 text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody className="text-gray-600 text-sm font-light">
+            {products.map((product) => (
+              <tr
+                key={product.id}
+                className="border-b border-gray-200 hover:bg-gray-50"
+              >
+                <td className="py-3 px-6 text-left">{product.name}</td>
+                <td className="py-3 px-6 text-left">{product.description}</td>
+                <td className="py-3 px-6 text-left">{product.stock}</td>
+                <td className="py-3 px-6 text-left">${product.price}</td>
+                <td className="py-3 px-6 text-left">{product.categoryName}</td>
+                <td className="py-3 px-6 text-center">
+                  <div className="flex items-center justify-center space-x-4">
+                    <button
+                      onClick={() => setEditingProduct(product)}
+                      className="text-blue-500 hover:underline"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => handleDelete(product.id)}
+                      disabled={deletingId === product.id}
+                      className={`text-red-500 hover:underline ${deletingId === product.id ? 'opacity-50' : ''
+                        }`}
+                    >
+                      {deletingId === product.id
+                        ? 'Eliminando...'
+                        : 'Eliminar'}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {editingProduct && (
+        <div className="mt-6">
+          <EditProducts productId={editingProduct.id} onSuccess={handleEditSuccess} />
+        </div>
+      )}
     </div>
   )
 }

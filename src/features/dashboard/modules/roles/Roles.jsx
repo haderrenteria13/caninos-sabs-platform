@@ -43,36 +43,77 @@ const Roles = () => {
   }
 
   if (error) {
-    return <p>{error}</p> 
+    return <p>{error}</p>
   }
 
   return (
-    <div>
-      <h1>Roles</h1>
-      <FormRoles
-        onSubmit={async (formData) => {
-          try {
-            const newRole = await rolesApi.create(formData)
-            toast.success('Rol creado con éxito')
-            setRoles([...roles, newRole])
-          } catch (error) {
-            toast.error(error.message) 
-          }
-        }} />
-      {deleteError && <p style={{ color: 'red' }}>Error al eliminar el rol: {deleteError}</p>} 
-      <ul>
-        {roles.map((role) => (
-          <li key={role.id}>
-            <h2>{role.name}</h2>
-            <p>{role.description}</p>
-            <button onClick={() => handleDelete(role.id)} disabled={deletingId === role.id}>
-              {deletingId === role.id ? 'Eliminando...' : 'Eliminar'}
-            </button>
-            <button onClick={() => setEditingRole(role)}>Editar</button>
-          </li>
-        ))}
-      </ul>
-      {editingRole && (<EditRole roleId={editingRole.id} onSuccess={handleEditSuccess} />)}
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Roles</h1>
+      <div className="mb-6">
+        <FormRoles
+          onSubmit={async (formData) => {
+            try {
+              const newRole = await rolesApi.create(formData)
+              toast.success('Rol creado con éxito')
+              setRoles([...roles, newRole])
+            } catch (error) {
+              toast.error(error.message)
+            }
+          }}
+        />
+      </div>
+      {deleteError && (
+        <p className="text-red-500 mb-4">
+          Error al eliminar el rol: {deleteError}
+        </p>
+      )}
+      <div className="overflow-x-auto bg-white rounded-lg shadow-md">
+        <table className="min-w-full border border-gray-200">
+          <thead>
+            <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+              <th className="py-3 px-6 text-left">Nombre</th>
+              <th className="py-3 px-6 text-left">Descripción</th>
+              <th className="py-3 px-6 text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody className="text-gray-600 text-sm font-light">
+            {roles.map((role) => (
+              <tr
+                key={role.id}
+                className="border-b border-gray-200 hover:bg-gray-50"
+              >
+                <td className="py-3 px-6 text-left">{role.name}</td>
+                <td className="py-3 px-6 text-left">{role.description}</td>
+                <td className="py-3 px-6 text-center">
+                  <div className="flex items-center justify-center space-x-4">
+                    <button
+                      onClick={() => setEditingRole(role)}
+                      className="text-blue-500 hover:underline"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => handleDelete(role.id)}
+                      disabled={deletingId === role.id}
+                      className={`text-red-500 hover:underline ${deletingId === role.id ? 'opacity-50' : ''
+                        }`}
+                    >
+                      {deletingId === role.id
+                        ? 'Eliminando...'
+                        : 'Eliminar'}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {editingRole && (
+        <div className="mt-6">
+          <EditRole roleId={editingRole.id} onSuccess={handleEditSuccess} />
+        </div>
+      )}
     </div>
   )
 }

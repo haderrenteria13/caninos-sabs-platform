@@ -5,6 +5,7 @@ import EditUser from './components/editUsers'
 import useGetUsers from './hooks/useGetUsers'
 import useDeleteUsers from './hooks/useDeleteUsers'
 import { toast } from 'react-toastify'
+import Avvvatars from 'avvvatars-react'
 
 const Users = () => {
     const { users: initialUsers, loading, error } = useGetUsers()
@@ -57,25 +58,71 @@ const Users = () => {
     }
 
     return (
-        <div>
-            <h1>Usuarios</h1>
-            <FormUsers onSubmit={handleCreateUser} />
-            {deleteError && <p style={{ color: 'red' }}>Error al eliminar el usuario: {deleteError}</p>}
-            <ul>
-                {users.map((user) => (
-                    <li key={user.id}>
-                        <h2>{user.fullName}</h2>
-                        <p>Email: {user.email}</p>
-                        <p>Rol: {user.role?.name}</p>
-                        <p>Compañía: {user.company?.name}</p>
-                        <button onClick={() => handleDelete(user.id)} disabled={deletingId === user.id}>
-                            {deletingId === user.id ? 'Eliminando...' : 'Eliminar'}
-                        </button>
-                        <button onClick={() => setEditingUser(user)}>Editar</button>
-                    </li>
-                ))}
-            </ul>
-            {editingUser && (<EditUser userId={editingUser.id} onSuccess={handleEditSuccess} />)}
+        <div className="p-6 bg-gray-50 min-h-screen">
+            <h1 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Usuarios</h1>
+            <div className="mb-6">
+                <FormUsers onSubmit={handleCreateUser} />
+            </div>
+            {deleteError && (
+                <p className="text-red-500 mb-4">
+                    Error al eliminar el usuario: {deleteError}
+                </p>
+            )}
+            <div className="overflow-x-auto bg-white rounded-lg shadow-md">
+                <table className="min-w-full border border-gray-200">
+                    <thead>
+                        <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                            <th className="py-3 px-6 text-left">Nombre</th>
+                            <th className="py-3 px-6 text-left">Email</th>
+                            <th className="py-3 px-6 text-left">Rol</th>
+                            <th className="py-3 px-6 text-left">Compañía</th>
+                            <th className="py-3 px-6 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody className="text-gray-600 text-sm font-light">
+                        {users.map((user) => (
+                            <tr
+                                key={user.id}
+                                className="border-b border-gray-200 hover:bg-gray-50"
+                            >
+                                <td className="py-3 px-6 text-left flex items-center gap-2">
+                                    <Avvvatars value={user.fullName} size={36} className="mr-2" />
+                                    {user.fullName}
+                                </td>
+                                <td className="py-3 px-6 text-left">{user.email}</td>
+                                <td className="py-3 px-6 text-left">{user.role?.name}</td>
+                                <td className="py-3 px-6 text-left">{user.company?.name}</td>
+                                <td className="py-3 px-6 text-center">
+                                    <div className="flex items-center justify-center space-x-4">
+                                        <button
+                                            onClick={() => setEditingUser(user)}
+                                            className="text-blue-500 hover:underline"
+                                        >
+                                            Editar
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(user.id)}
+                                            disabled={deletingId === user.id}
+                                            className={`text-red-500 hover:underline ${
+                                                deletingId === user.id ? 'opacity-50' : ''
+                                            }`}
+                                        >
+                                            {deletingId === user.id
+                                                ? 'Eliminando...'
+                                                : 'Eliminar'}
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+            {editingUser && (
+                <div className="mt-6">
+                    <EditUser userId={editingUser.id} onSuccess={handleEditSuccess} />
+                </div>
+            )}
         </div>
     )
 }

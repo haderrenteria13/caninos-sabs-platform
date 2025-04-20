@@ -4,6 +4,7 @@ import loginApi from '../services/loginApi'
 const useAuth = () => {
   const [user, setUser] = useState(null)
   const [error, setError] = useState(null)
+  const [isLoggedOut, setIsLoggedOut] = useState(false) // Nuevo estado
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token')
@@ -12,6 +13,8 @@ const useAuth = () => {
       setUser({ email: storedEmail })
     }
   }, [])
+
+  const isAuthenticated = !!user
 
   const login = async (email, password) => {
     try {
@@ -31,13 +34,16 @@ const useAuth = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('email')
     setUser(null)
+    setIsLoggedOut(true) // Actualiza el estado
   }
 
   return {
     user,
     login,
     logout,
-    error
+    error,
+    isAuthenticated,
+    isLoggedOut // Exporta el nuevo estado
   }
 }
 
