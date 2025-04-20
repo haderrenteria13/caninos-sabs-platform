@@ -41,49 +41,123 @@ const FormProducts = ({ product = null, onSubmit }) => {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label>Nombre:</label>
-                <input type="text" name="name" value={formData.name} onChange={handleChange} required />
-            </div>
-            <div>
-                <label>Descripción:</label>
-                <input type="text" name="description" value={formData.description} onChange={handleChange} required />
-            </div>
-            <div>
-                <label>Stock:</label>
-                <input type="number" name="stock" value={formData.stock} onChange={handleChange} required />
-            </div>
-            <div>
-                <label>Precio:</label>
-                <input type="number" step="0.01" name="price" value={formData.price} onChange={handleChange} required />
-            </div>
-            <div>
-                <label>URL de la Imagen:</label>
-                <input type="text" name="imageUrl" value={formData.imageUrl} onChange={handleChange} required />
-            </div>
-            <div>
-                <label>Categoría:</label>
-                {loadingCategories ? (
-                    <p>Cargando categorías...</p>
-                ) : errorCategories ? (
-                    <p>Error al cargar categorías: {errorCategories}</p>
-                ) : (
-                    <select name="categoryId" value={formData.categoryId} onChange={handleChange} required>
-                        <option value="" disabled>Seleccione una categoría</option>
-                        {categories.map((category) => (
-                            <option key={category.id} value={category.id}>
-                                {category.name}
-                            </option>
-                        ))}
-                    </select>
-                )}
-            </div>
-            <button type="submit" disabled={loading}>
-                {loading ? (product ? 'Actualizando...' : 'Creando...') : (product ? 'Actualizar Producto' : 'Crear Producto')}
-            </button>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-        </form>
+        <form
+  onSubmit={handleSubmit}
+  className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-5xl mx-auto"
+>
+  <h2 className="text-2xl font-bold text-center text-indigo-600 mb-6">
+    {product ? 'Editar Producto' : 'Registrar Nuevo Producto'}
+  </h2>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-1">Nombre:</label>
+      <input
+        type="text"
+        name="name"
+        value={formData.name}
+        onChange={handleChange}
+        required
+        placeholder="Nombre del producto"
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-1">Descripción:</label>
+      <input
+        type="text"
+        name="description"
+        value={formData.description}
+        onChange={handleChange}
+        required
+        placeholder="Descripción del producto"
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-1">Stock:</label>
+      <input
+        type="number"
+        name="stock"
+        value={formData.stock}
+        onChange={handleChange}
+        required
+        placeholder="Cantidad en inventario"
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-1">Precio:</label>
+      <input
+        type="number"
+        step="0.01"
+        name="price"
+        value={formData.price}
+        onChange={handleChange}
+        required
+        placeholder="Precio del producto"
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+    </div>
+
+    <div className="md:col-span-2">
+      <label className="block text-sm font-semibold text-gray-700 mb-1">URL de la Imagen:</label>
+      <input
+        type="text"
+        name="imageUrl"
+        value={formData.imageUrl}
+        onChange={handleChange}
+        required
+        placeholder="https://ejemplo.com/imagen.jpg"
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+    </div>
+
+    <div className="md:col-span-2">
+      <label className="block text-sm font-semibold text-gray-700 mb-1">Categoría:</label>
+      {loadingCategories ? (
+        <p className="text-gray-500">Cargando categorías...</p>
+      ) : errorCategories ? (
+        <p className="text-red-500">Error al cargar categorías: {errorCategories}</p>
+      ) : (
+        <select
+          name="categoryId"
+          value={formData.categoryId}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+          <option value="" disabled>Seleccione una categoría</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+      )}
+    </div>
+  </div>
+
+  {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
+
+  <button
+    type="submit"
+    disabled={loading}
+    className="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 disabled:opacity-50"
+  >
+    {loading
+      ? product
+        ? 'Actualizando...'
+        : 'Creando...'
+      : product
+      ? 'Actualizar Producto'
+      : 'Crear Producto'}
+  </button>
+</form>
+
     )
 }
 

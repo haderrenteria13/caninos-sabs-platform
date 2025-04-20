@@ -49,58 +49,120 @@ const FormUsers = ({ user = null, onSubmit }) => {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label>Nombre Completo:</label>
-                <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required />
-            </div>
-            <div>
-                <label>Email:</label>
-                <input type="email" name="email" value={formData.email} onChange={handleChange} required />
-            </div>
-            <div>
-                <label>Contraseña:</label>
-                <input type="password" name="password" value={formData.password} onChange={handleChange} required />
-            </div>
-            <div>
-                <label>Rol:</label>
-                {loadingRoles ? (
-                    <p>Cargando roles...</p>
-                ) : errorRoles ? (
-                    <p>Error al cargar roles: {errorRoles}</p>
-                ) : (
-                    <select name="roleId" value={formData.roleId} onChange={handleChange} required>
-                        <option value="" disabled>Seleccione un rol</option>
-                        {roles.map((role) => (
-                            <option key={role.id} value={role.id}>
-                                {role.name}
-                            </option>
-                        ))}
-                    </select>
-                )}
-            </div>
-            <div>
-                <label>Compañía:</label>
-                {loadingCompanies ? (
-                    <p>Cargando compañías...</p>
-                ) : errorCompanies ? (
-                    <p>Error al cargar compañías: {errorCompanies}</p>
-                ) : (
-                    <select name="companyId" value={formData.companyId} onChange={handleChange} required>
-                        <option value="" disabled>Seleccione una compañía</option>
-                        {companies.map((company) => (
-                            <option key={company.id} value={company.id}>
-                                {company.name}
-                            </option>
-                        ))}
-                    </select>
-                )}
-            </div>
-            <button type="submit" disabled={loading}>
-                {loading ? (user ? 'Actualizando...' : 'Creando...') : (user ? 'Actualizar Usuario' : 'Crear Usuario')}
-            </button>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-        </form>
+        <form
+  onSubmit={handleSubmit}
+  className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-5xl mx-auto"
+>
+  <h2 className="text-2xl font-bold text-indigo-600 mb-6 text-center">
+    {user ? 'Editar Usuario' : 'Crear Nuevo Usuario'}
+  </h2>
+
+  <div className="grid grid-cols-2 gap-6">
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-1">Nombre Completo:</label>
+      <input
+        type="text"
+        name="fullName"
+        value={formData.fullName}
+        onChange={handleChange}
+        required
+        placeholder="Nombre completo"
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-1">Email:</label>
+      <input
+        type="email"
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
+        required
+        placeholder="Correo electrónico"
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-1">Contraseña:</label>
+      <input
+        type="password"
+        name="password"
+        value={formData.password}
+        onChange={handleChange}
+        required
+        placeholder="Contraseña"
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-1">Rol:</label>
+      {loadingRoles ? (
+        <p className="text-sm text-gray-500">Cargando roles...</p>
+      ) : errorRoles ? (
+        <p className="text-red-500 text-sm">Error al cargar roles: {errorRoles}</p>
+      ) : (
+        <select
+          name="roleId"
+          value={formData.roleId}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+          <option value="" disabled>Seleccione un rol</option>
+          {roles.map((role) => (
+            <option key={role.id} value={role.id}>
+              {role.name}
+            </option>
+          ))}
+        </select>
+      )}
+    </div>
+
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-1">Compañía:</label>
+      {loadingCompanies ? (
+        <p className="text-sm text-gray-500">Cargando compañías...</p>
+      ) : errorCompanies ? (
+        <p className="text-red-500 text-sm">Error al cargar compañías: {errorCompanies}</p>
+      ) : (
+        <select
+          name="companyId"
+          value={formData.companyId}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+          <option value="" disabled>Seleccione una compañía</option>
+          {companies.map((company) => (
+            <option key={company.id} value={company.id}>
+              {company.name}
+            </option>
+          ))}
+        </select>
+      )}
+    </div>
+  </div>
+
+  {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
+
+  <button
+    type="submit"
+    disabled={loading}
+    className="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 disabled:opacity-50"
+  >
+    {loading
+      ? user
+        ? 'Actualizando...'
+        : 'Creando...'
+      : user
+      ? 'Actualizar Usuario'
+      : 'Crear Usuario'}
+  </button>
+</form>
+
     )
 }
 
