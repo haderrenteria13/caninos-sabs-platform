@@ -22,10 +22,6 @@ const SideBar = () => {
     { name: 'Empresas', path: '/dashboard/companies', icon: <Building className="h-5 w-5" /> },
   ]
 
-  const moreLinks = [
-    { name: 'Ayuda', path: '/dashboard/help', icon: <HelpCircle className="h-5 w-5" /> },
-  ]
-
   return (
     <aside className="w-64 bg-gray-900 text-white h-screen p-4 flex flex-col justify-between">
       <div>
@@ -43,18 +39,6 @@ const SideBar = () => {
               <li key={link.name}>
                 <NavLink to={link.path} className={({ isActive }) => `flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${isActive ? 'bg-gray-700 text-white' : 'hover:bg-gray-800'}`}>
                   {link.icon} <span>{link.name}</span>
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="mt-6">
-          <p className="text-xs text-gray-400 uppercase mb-2">Más</p>
-          <ul className="space-y-2">
-            {moreLinks.map((link) => (
-              <li key={link.name}>
-                <NavLink to={link.path} className={({ isActive }) => `flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${isActive ? 'bg-gray-700 text-white' : 'hover:bg-gray-800'}`}>
-                  {link.icon}<span>{link.name}</span>
                 </NavLink>
               </li>
             ))}
