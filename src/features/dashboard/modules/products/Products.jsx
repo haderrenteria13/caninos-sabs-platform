@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
+import { Dialog } from '@headlessui/react'
 import { toast } from 'react-toastify'
 import useGetProducts from './hooks/useGetProducts'
 import useDeleteProducts from './hooks/useDeleteProducts'
 import FormProducts from './components/FormProducts'
-import EditProducts from './components/EditProducts'
 import productsApi from './services/productsApi'
 
 const Products = () => {
@@ -12,6 +12,8 @@ const Products = () => {
   const [products, setProducts] = useState([])
   const [deletingId, setDeletingId] = useState(null)
   const [editingProduct, setEditingProduct] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   useEffect(() => {
     setProducts(initialProducts)
@@ -41,6 +43,7 @@ const Products = () => {
       toast.error('Error al actualizar la lista de productos')
     }
     setEditingProduct(null)
+    setIsEditModalOpen(false)
   }
 
   if (loading) {
@@ -58,20 +61,12 @@ const Products = () => {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Productos</h1>
-      <div className="mb-6">
-        <FormProducts
-          onSubmit={async (formData) => {
-            try {
-              const newProduct = await productsApi.create(formData)
-              const updatedProducts = await productsApi.getAll() // Obtener la lista actualizada
-              setProducts(updatedProducts) // Actualizar el estado con la lista completa
-              toast.success('Producto creado con éxito')
-            } catch (error) {
-              toast.error(error.message)
-            }
-          }}
-        />
-      </div>
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="mb-6 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
+      >
+        Añadir Producto
+      </button>
       {deleteError && (
         <p className="text-red-500 mb-4">
           Error al eliminar el producto: {deleteError}
@@ -103,7 +98,10 @@ const Products = () => {
                 <td className="py-3 px-6 text-center">
                   <div className="flex items-center justify-center space-x-4">
                     <button
-                      onClick={() => setEditingProduct(product)}
+                      onClick={() => {
+                        setEditingProduct(product)
+                        setIsEditModalOpen(true)
+                      }}
                       className="text-blue-500 hover:underline"
                     >
                       Editar
@@ -125,11 +123,50 @@ const Products = () => {
           </tbody>
         </table>
       </div>
-      {editingProduct && (
-        <div className="mt-6">
-          <EditProducts productId={editingProduct.id} onSuccess={handleEditSuccess} />
+
+      {/* Modal para añadir producto */}
+      <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-10">
+        <div className="fixed inset-0 backdrop-blur-sm" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="bg-gray-900 bg-opacity-90 rounded-lg shadow-lg p-6 w-full max-w-lg">
+            <FormProducts
+              onSubmit={async (formData) => {
+                try {
+                  const newProduct = await productsApi.create(formData)
+                  const updatedProducts = await productsApi.getAll()
+                  setProducts(updatedProducts)
+                  toast.success('Producto creado con éxito')
+                  setIsModalOpen(false)
+                } catch (error) {
+                  toast.error(error.message)
+                }
+              }}
+            />
+          </Dialog.Panel>
         </div>
-      )}
+      </Dialog>
+
+      {/* Modal para editar producto */}
+      <Dialog open={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} className="relative z-10">
+        <div className="fixed inset-0 bg-opacity-30 backdrop-blur-sm" /> {/* Fondo transparente con desenfoque */}
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="bg-gray-900 bg-opacity-90 rounded-lg shadow-lg p-6 w-full max-w-lg"> {/* Panel semi-transparente */}
+            {editingProduct && (
+              <FormProducts
+                product={editingProduct}
+                onSubmit={async (formData) => {
+                  try {
+                    await productsApi.update(editingProduct.id, formData)
+                    handleEditSuccess()
+                  } catch (error) {
+                    toast.error(error.message)
+                  }
+                }}
+              />
+            )}
+          </Dialog.Panel>
+        </div>
+      </Dialog>
     </div>
   )
 }

@@ -5,6 +5,7 @@ import useDeleteRoles from './hooks/useDeleteRoles'
 import FormRoles from './components/FormRoles'
 import EditRole from './components/EditRoles'
 import rolesApi from './services/rolesApi'
+import { Dialog } from '@headlessui/react'
 
 const Roles = () => {
   const { roles: initialRoles, error, loading } = useGetRoles()
@@ -12,6 +13,8 @@ const Roles = () => {
   const [roles, setRoles] = useState([])
   const [deletingId, setDeletingId] = useState(null)
   const [editingRole, setEditingRole] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   useEffect(() => {
     setRoles(initialRoles)
@@ -41,6 +44,7 @@ const Roles = () => {
       toast.error('Error al actualizar la lista de roles')
     }
     setEditingRole(null)
+    setIsEditModalOpen(false) // Cierra el modal después de editar
   }
 
   if (loading) {
@@ -59,18 +63,12 @@ const Roles = () => {
     <div className="p-6 bg-gray-50 min-h-screen">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Roles</h1>
       <div className="mb-6">
-        <FormRoles
-          onSubmit={async (formData) => {
-            try {
-              const newRole = await rolesApi.create(formData)
-              const updatedRoles = await rolesApi.getAll() // Obtener la lista actualizada
-              setRoles(updatedRoles) // Actualizar el estado con la lista completa
-              toast.success('Rol creado con éxito')
-            } catch (error) {
-              toast.error(error.message)
-            }
-          }}
-        />
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-orange-500 text-white px-4 py-2 rounded"
+        >
+          Crear Rol
+        </button>
       </div>
       {deleteError && (
         <p className="text-red-500 mb-4">
@@ -97,7 +95,10 @@ const Roles = () => {
                 <td className="py-3 px-6 text-center">
                   <div className="flex items-center justify-center space-x-4">
                     <button
-                      onClick={() => setEditingRole(role)}
+                      onClick={() => {
+                        setEditingRole(role)
+                        setIsEditModalOpen(true)
+                      }}
                       className="text-blue-500 hover:underline"
                     >
                       Editar
@@ -119,11 +120,46 @@ const Roles = () => {
           </tbody>
         </table>
       </div>
-      {editingRole && (
-        <div className="mt-6">
-          <EditRole roleId={editingRole.id} onSuccess={handleEditSuccess} />
+      <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-10">
+        <div className="fixed inset-0 backdrop-blur-sm" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="bg-gray-900 bg-opacity-90 rounded-lg shadow-lg p-6 w-full max-w-lg">
+            <FormRoles
+              onSubmit={async (formData) => {
+                try {
+                  const newRole = await rolesApi.create(formData)
+                  const updatedRoles = await rolesApi.getAll()
+                  setRoles(updatedRoles)
+                  toast.success('Rol creado con éxito')
+                  setIsModalOpen(false)
+                } catch (error) {
+                  toast.error(error.message)
+                }
+              }}
+            />
+          </Dialog.Panel>
         </div>
-      )}
+      </Dialog>
+      <Dialog open={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} className="relative z-10">
+        <div className="fixed inset-0 backdrop-blur-sm" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="bg-gray-900 bg-opacity-90 rounded-lg shadow-lg p-6 w-full max-w-lg">
+            {editingRole && (
+              <FormRoles
+                role={editingRole}
+                onSubmit={async (formData) => {
+                  try {
+                    await rolesApi.update(editingRole.id, formData)
+                    handleEditSuccess()
+                  } catch (error) {
+                    toast.error(error.message)
+                  }
+                }}
+              />
+            )}
+          </Dialog.Panel>
+        </div>
+      </Dialog>
     </div>
   )
 }

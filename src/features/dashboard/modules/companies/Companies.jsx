@@ -5,6 +5,7 @@ import FormCompanies from './components/FormCompanies'
 import EditCompanies from './components/EditCompanies'
 import companiesApi from './services/companiesApi'
 import { toast } from 'react-toastify'
+import { Dialog } from '@headlessui/react'
 
 const Companies = () => {
   const { companies: initialCompanies, error, loading } = useGetCompanies()
@@ -12,6 +13,8 @@ const Companies = () => {
   const [companies, setCompanies] = useState([])
   const [deletingId, setDeletingId] = useState(null)
   const [editingCompany, setEditingCompany] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   useEffect(() => {
     setCompanies(initialCompanies)
@@ -41,6 +44,7 @@ const Companies = () => {
       toast.error('Error al actualizar la lista de compañías')
     }
     setEditingCompany(null)
+    setIsEditModalOpen(false) // Cierra el modal después de editar
   }
 
   if (loading) {
@@ -57,21 +61,35 @@ const Companies = () => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Compañías</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Empresas</h1>
       <div className="mb-6">
-        <FormCompanies
-          onSubmit={async (formData) => {
-            try {
-              const newCompany = await companiesApi.create(formData)
-              const updatedCompanies = await companiesApi.getAll() // Obtener la lista actualizada
-              setCompanies(updatedCompanies) // Actualizar el estado con la lista completa
-              toast.success('Compañía creada con éxito')
-            } catch (error) {
-              toast.error(error.message)
-            }
-          }}
-        />
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-orange-500 text-white px-4 py-2 rounded-lg"
+        >
+          Crear Empresa
+        </button>
       </div>
+      <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-10">
+        <div className="fixed inset-0 backdrop-blur-sm" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="bg-gray-900 bg-opacity-90 rounded-lg shadow-lg p-6 w-full max-w-lg">
+            <FormCompanies
+              onSubmit={async (formData) => {
+                try {
+                  const newCompany = await companiesApi.create(formData)
+                  const updatedCompanies = await companiesApi.getAll()
+                  setCompanies(updatedCompanies)
+                  toast.success('Compañía creada con éxito')
+                  setIsModalOpen(false)
+                } catch (error) {
+                  toast.error(error.message)
+                }
+              }}
+            />
+          </Dialog.Panel>
+        </div>
+      </Dialog>
       {deleteError && (
         <p className="text-red-500 mb-4">
           Error al eliminar la compañía: {deleteError}
@@ -103,7 +121,10 @@ const Companies = () => {
                 <td className="py-3 px-6 text-center">
                   <div className="flex items-center justify-center space-x-4">
                     <button
-                      onClick={() => setEditingCompany(company)}
+                      onClick={() => {
+                        setEditingCompany(company)
+                        setIsEditModalOpen(true)
+                      }}
                       className="text-blue-500 hover:underline"
                     >
                       Editar
@@ -125,11 +146,26 @@ const Companies = () => {
           </tbody>
         </table>
       </div>
-      {editingCompany && (
-        <div className="mt-6">
-          <EditCompanies companyId={editingCompany.id} onSuccess={handleEditSuccess} />
+      <Dialog open={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} className="relative z-10">
+        <div className="fixed inset-0 backdrop-blur-sm" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="bg-gray-900 bg-opacity-90 rounded-lg shadow-lg p-6 w-full max-w-lg">
+            {editingCompany && (
+              <FormCompanies
+                company={editingCompany}
+                onSubmit={async (formData) => {
+                  try {
+                    await companiesApi.update(editingCompany.id, formData)
+                    handleEditSuccess()
+                  } catch (error) {
+                    toast.error(error.message)
+                  }
+                }}
+              />
+            )}
+          </Dialog.Panel>
         </div>
-      )}
+      </Dialog>
     </div>
   )
 }

@@ -5,6 +5,7 @@ import useDeleteCategory from './hooks/useDeleteCategories'
 import FormCategories from './components/FormCategories'
 import EditCategory from './components/EditCategories'
 import categoriesApi from './services/categoriesApi'
+import { Dialog } from '@headlessui/react'
 
 const Categories = () => {
   const { categories: initialCategories, error, loading } = useGetCategories()
@@ -12,6 +13,8 @@ const Categories = () => {
   const [categories, setCategories] = useState([])
   const [deletingId, setDeletingId] = useState(null)
   const [editingCategory, setEditingCategory] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   useEffect(() => {
     setCategories(initialCategories)
@@ -41,6 +44,7 @@ const Categories = () => {
       toast.error('Error al actualizar la lista de categorías')
     }
     setEditingCategory(null)
+    setIsEditModalOpen(false) // Cierra el modal después de editar
   }
 
   if (loading) {
@@ -59,18 +63,12 @@ const Categories = () => {
     <div className="p-6 bg-gray-50 min-h-screen">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Categorías</h1>
       <div className="mb-6">
-        <FormCategories
-          onSubmit={async (formData) => {
-            try {
-              const newCategory = await categoriesApi.create(formData)
-              const updatedCategories = await categoriesApi.getAll() // Obtener la lista actualizada
-              setCategories(updatedCategories) // Actualizar el estado con la lista completa
-              toast.success('Categoría creada con éxito')
-            } catch (error) {
-              toast.error(error.message)
-            }
-          }}
-        />
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-orange-500 text-white px-4 py-2 rounded-lg"
+        >
+          Crear Categoría
+        </button>
       </div>
       {deleteError && (
         <p className="text-red-500 mb-4">
@@ -97,7 +95,10 @@ const Categories = () => {
                 <td className="py-3 px-6 text-center">
                   <div className="flex items-center justify-center space-x-4">
                     <button
-                      onClick={() => setEditingCategory(category)}
+                      onClick={() => {
+                        setEditingCategory(category)
+                        setIsEditModalOpen(true)
+                      }}
                       className="text-blue-500 hover:underline"
                     >
                       Editar
@@ -119,11 +120,46 @@ const Categories = () => {
           </tbody>
         </table>
       </div>
-      {editingCategory && (
-        <div className="mt-6">
-          <EditCategory categoryId={editingCategory.id} onSuccess={handleEditSuccess} />
+      <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-10">
+        <div className="fixed inset-0 backdrop-blur-sm" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="bg-gray-900 bg-opacity-90 rounded-lg shadow-lg p-6 w-full max-w-lg">
+            <FormCategories
+              onSubmit={async (formData) => {
+                try {
+                  const newCategory = await categoriesApi.create(formData)
+                  const updatedCategories = await categoriesApi.getAll()
+                  setCategories(updatedCategories)
+                  toast.success('Categoría creada con éxito')
+                  setIsModalOpen(false)
+                } catch (error) {
+                  toast.error(error.message)
+                }
+              }}
+            />
+          </Dialog.Panel>
         </div>
-      )}
+      </Dialog>
+      <Dialog open={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} className="relative z-10">
+        <div className="fixed inset-0 backdrop-blur-sm" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="bg-gray-900 bg-opacity-90 rounded-lg shadow-lg p-6 w-full max-w-lg">
+            {editingCategory && (
+              <FormCategories
+                category={editingCategory}
+                onSubmit={async (formData) => {
+                  try {
+                    await categoriesApi.update(editingCategory.id, formData)
+                    handleEditSuccess()
+                  } catch (error) {
+                    toast.error(error.message)
+                  }
+                }}
+              />
+            )}
+          </Dialog.Panel>
+        </div>
+      </Dialog>
     </div>
   )
 }

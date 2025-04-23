@@ -6,6 +6,7 @@ import useGetUsers from './hooks/useGetUsers'
 import useDeleteUsers from './hooks/useDeleteUsers'
 import { toast } from 'react-toastify'
 import Avvvatars from 'avvvatars-react'
+import { Dialog } from '@headlessui/react'
 
 const Users = () => {
     const { users: initialUsers, loading, error } = useGetUsers()
@@ -13,6 +14,8 @@ const Users = () => {
     const [users, setUsers] = useState([])
     const [deletingId, setDeletingId] = useState(null)
     const [editingUser, setEditingUser] = useState(null)
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
     useEffect(() => {
         setUsers(initialUsers)
@@ -42,6 +45,7 @@ const Users = () => {
             toast.error('Error al actualizar la lista de usuarios')
         }
         setEditingUser(null)
+        setIsEditModalOpen(false) // Cierra el modal después de editar
     }
 
     const handleCreateUser = async (formData) => {
@@ -56,11 +60,11 @@ const Users = () => {
 
     if (loading) {
         return (
-          <div className="flex justify-center items-center min-h-screen">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500 "></div>
-          </div>
+            <div className="flex justify-center items-center min-h-screen">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500 "></div>
+            </div>
         )
-      }
+    }
 
     if (error) {
         return <p>{error}</p>
@@ -70,18 +74,12 @@ const Users = () => {
         <div className="p-6 bg-gray-50 min-h-screen">
             <h1 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Usuarios</h1>
             <div className="mb-6">
-                <FormUsers
-                    onSubmit={async (formData) => {
-                        try {
-                            const newUser = await usersApi.create(formData)
-                            const updatedUsers = await usersApi.getAll() // Obtener la lista actualizada
-                            setUsers(updatedUsers) // Actualizar el estado con la lista completa
-                            toast.success('Usuario creado con éxito')
-                        } catch (error) {
-                            toast.error(error.message)
-                        }
-                    }}
-                />
+                <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="bg-orange-500 text-white px-4 py-2 rounded"
+                >
+                    Crear Usuario
+                </button>
             </div>
             {deleteError && (
                 <p className="text-red-500 mb-4">
@@ -115,7 +113,10 @@ const Users = () => {
                                 <td className="py-3 px-6 text-center">
                                     <div className="flex items-center justify-center space-x-4">
                                         <button
-                                            onClick={() => setEditingUser(user)}
+                                            onClick={() => {
+                                                setEditingUser(user)
+                                                setIsEditModalOpen(true)
+                                            }}
                                             className="text-blue-500 hover:underline"
                                         >
                                             Editar
@@ -137,6 +138,46 @@ const Users = () => {
                     </tbody>
                 </table>
             </div>
+            <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-10">
+                <div className="fixed inset-0 backdrop-blur-sm" />
+                <div className="fixed inset-0 flex items-center justify-center p-4">
+                    <Dialog.Panel className="bg-gray-900 bg-opacity-90 rounded-lg shadow-lg p-6 w-full max-w-lg">
+                        <FormUsers
+                            onSubmit={async (formData) => {
+                                try {
+                                    const newUser = await usersApi.create(formData)
+                                    const updatedUsers = await usersApi.getAll()
+                                    setUsers(updatedUsers)
+                                    toast.success('Usuario creado con éxito')
+                                    setIsModalOpen(false)
+                                } catch (error) {
+                                    toast.error(error.message)
+                                }
+                            }}
+                        />
+                    </Dialog.Panel>
+                </div>
+            </Dialog>
+            <Dialog open={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} className="relative z-10">
+                <div className="fixed inset-0 backdrop-blur-sm" />
+                <div className="fixed inset-0 flex items-center justify-center p-4">
+                    <Dialog.Panel className="bg-gray-900 bg-opacity-90 rounded-lg shadow-lg p-6 w-full max-w-lg">
+                        {editingUser && (
+                            <FormUsers
+                                user={editingUser}
+                                onSubmit={async (formData) => {
+                                    try {
+                                        await usersApi.update(editingUser.id, formData)
+                                        handleEditSuccess()
+                                    } catch (error) {
+                                        toast.error(error.message)
+                                    }
+                                }}
+                            />
+                        )}
+                    </Dialog.Panel>
+                </div>
+            </Dialog>
             {editingUser && (
                 <div className="mt-6">
                     <EditUser userId={editingUser.id} onSuccess={handleEditSuccess} />
