@@ -1,4 +1,4 @@
-import { Dog, LogOut, Users, Package, Tag, Building, Settings, HelpCircle, MessageSquare } from 'lucide-react'
+import { Dog, LogOut, Users, Package, Tag, Building,  } from 'lucide-react'
 import React, { useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import useAuth from '../../../auth/hooks/useAuth'
@@ -23,7 +23,7 @@ const SideBar = () => {
   ]
 
   return (
-    <aside className="w-64 bg-gray-900 text-white h-screen p-4 flex flex-col justify-between">
+    <aside className="w-64 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white h-screen p-4 flex flex-col justify-between">
       <div>
         <div className="flex items-center gap-3 mb-6">
           <Dog className="h-7 w-7 text-orange-500" />

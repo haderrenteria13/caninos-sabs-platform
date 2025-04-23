@@ -1,6 +1,5 @@
 import { Dog, Facebook, Instagram, Mail, MapPin, Phone, Twitter } from 'lucide-react'
 import React from 'react'
-import { NavLink } from 'react-router-dom'
 
 const Footer = () => {
   const handleScroll = (id) => {
