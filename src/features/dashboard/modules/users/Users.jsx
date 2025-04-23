@@ -26,16 +26,21 @@ const Users = () => {
             if (success) {
                 toast.success('Usuario eliminado correctamente')
                 setUsers((prev) => prev.filter((user) => user.id !== id))
-                setDeletingId(null)
             } else {
                 toast.error('Error al eliminar el usuario')
-                setDeletingId(null)
             }
+            setDeletingId(null)
         }
     }
 
-    const handleEditSuccess = () => {
-        toast.success('Usuario actualizado con éxito')
+    const handleEditSuccess = async () => {
+        try {
+            const updatedUsers = await usersApi.getAll()
+            setUsers(updatedUsers)
+            toast.success('Usuario actualizado con éxito')
+        } catch (error) {
+            toast.error('Error al actualizar la lista de usuarios')
+        }
         setEditingUser(null)
     }
 
@@ -50,8 +55,12 @@ const Users = () => {
     }
 
     if (loading) {
-        return <p>Cargando...</p>
-    }
+        return (
+          <div className="flex justify-center items-center min-h-screen">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500 "></div>
+          </div>
+        )
+      }
 
     if (error) {
         return <p>{error}</p>
@@ -61,7 +70,18 @@ const Users = () => {
         <div className="p-6 bg-gray-50 min-h-screen">
             <h1 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Usuarios</h1>
             <div className="mb-6">
-                <FormUsers onSubmit={handleCreateUser} />
+                <FormUsers
+                    onSubmit={async (formData) => {
+                        try {
+                            const newUser = await usersApi.create(formData)
+                            const updatedUsers = await usersApi.getAll() // Obtener la lista actualizada
+                            setUsers(updatedUsers) // Actualizar el estado con la lista completa
+                            toast.success('Usuario creado con éxito')
+                        } catch (error) {
+                            toast.error(error.message)
+                        }
+                    }}
+                />
             </div>
             {deleteError && (
                 <p className="text-red-500 mb-4">
@@ -103,9 +123,8 @@ const Users = () => {
                                         <button
                                             onClick={() => handleDelete(user.id)}
                                             disabled={deletingId === user.id}
-                                            className={`text-red-500 hover:underline ${
-                                                deletingId === user.id ? 'opacity-50' : ''
-                                            }`}
+                                            className={`text-red-500 hover:underline ${deletingId === user.id ? 'opacity-50' : ''
+                                                }`}
                                         >
                                             {deletingId === user.id
                                                 ? 'Eliminando...'

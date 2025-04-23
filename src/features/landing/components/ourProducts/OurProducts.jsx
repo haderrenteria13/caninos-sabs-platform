@@ -1,4 +1,4 @@
-import { ShoppingCart } from 'lucide-react'
+import { DollarSign} from 'lucide-react'
 import React from 'react'
 
 const OurProducts = ({ id, products }) => {
@@ -23,13 +23,12 @@ const OurProducts = ({ id, products }) => {
                 <h3 className='font-semibold text-lg mb-3 truncate text-gray-800'>{product.name}</h3>
                 <p className='text-gray-600 text-sm line-clamp-2 mb-4'>{product.description}</p>
                 <div className='flex items-center justify-between mb-4'>
-                  <p className='text-lg font-bold text-orange-500'>${product.price.toFixed(2)}</p>
                   <p className={`text-sm font-medium ${product.stock < 5 ? 'text-red-500' : 'text-gray-500'}`}>
                     {product.stock < 5 ? '¡Pocas unidades!' : `Stock: ${product.stock}`}
                   </p>
                 </div>
                 <button className='w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 rounded-lg flex items-center justify-center transition-transform transform hover:scale-105'>
-                  <ShoppingCart className='h-5 w-5 mr-2' /> Agregar
+                  <DollarSign className='h-5 w-5 mr-2' /> {product.price.toFixed(2)}
                 </button>
               </div>
             </div>

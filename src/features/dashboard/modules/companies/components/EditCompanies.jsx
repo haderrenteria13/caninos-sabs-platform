@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import companiesApi from '../services/companiesApi'
 import FormCompanies from './FormCompanies'
+import { toast } from 'react-toastify'
 
 const EditCompanies = ({ companyId, onSuccess }) => {
     const [company, setCompany] = useState(null)
@@ -11,7 +12,7 @@ const EditCompanies = ({ companyId, onSuccess }) => {
                 const data = await companiesApi.getForID(companyId)
                 setCompany(data)
             } catch (error) {
-                alert('Error al cargar la empresa')
+                toast.error('Error al cargar la empresa')
             }
         }
 
@@ -24,7 +25,7 @@ const EditCompanies = ({ companyId, onSuccess }) => {
             await companiesApi.update(companyId, formData)
             if (onSuccess) onSuccess()
         } catch (error) {
-            alert(error.message)
+            toast.error(error.message)
         }
     }
 

@@ -25,21 +25,30 @@ const Products = () => {
       if (success) {
         toast.success('Producto eliminado correctamente')
         setProducts((prev) => prev.filter((product) => product.id !== id))
-        setDeletingId(null)
       } else {
         toast.error('Error al eliminar el producto')
-        setDeletingId(null)
       }
+      setDeletingId(null)
     }
   }
 
-  const handleEditSuccess = () => {
-    toast.success('Producto actualizado con éxito')
+  const handleEditSuccess = async () => {
+    try {
+      const updatedProducts = await productsApi.getAll()
+      setProducts(updatedProducts)
+      toast.success('Producto actualizado con éxito')
+    } catch (error) {
+      toast.error('Error al actualizar la lista de productos')
+    }
     setEditingProduct(null)
   }
 
   if (loading) {
-    return <p>Cargando...</p>
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500 "></div>
+      </div>
+    )
   }
 
   if (error) {
@@ -54,8 +63,9 @@ const Products = () => {
           onSubmit={async (formData) => {
             try {
               const newProduct = await productsApi.create(formData)
+              const updatedProducts = await productsApi.getAll() // Obtener la lista actualizada
+              setProducts(updatedProducts) // Actualizar el estado con la lista completa
               toast.success('Producto creado con éxito')
-              setProducts([...products, newProduct])
             } catch (error) {
               toast.error(error.message)
             }

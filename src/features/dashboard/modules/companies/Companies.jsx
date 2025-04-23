@@ -4,6 +4,7 @@ import useDeleteCompanies from './hooks/useDeleteCompanies'
 import FormCompanies from './components/FormCompanies'
 import EditCompanies from './components/EditCompanies'
 import companiesApi from './services/companiesApi'
+import { toast } from 'react-toastify'
 
 const Companies = () => {
   const { companies: initialCompanies, error, loading } = useGetCompanies()
@@ -22,23 +23,32 @@ const Companies = () => {
       setDeletingId(id)
       const success = await deleteCompanies(id)
       if (success) {
-        alert('Empresa eliminada correctamente')
+        toast.success('Empresa eliminada correctamente')
         setCompanies((prev) => prev.filter((company) => company.id !== id))
-        setDeletingId(null)
       } else {
-        alert('Error al eliminar la empresa')
-        setDeletingId(null)
+        toast.error('Error al eliminar la empresa')
       }
+      setDeletingId(null)
     }
   }
 
-  const handleEditSuccess = () => {
-    alert('Empresa actualizada con éxito')
+  const handleEditSuccess = async () => {
+    try {
+      const updatedCompanies = await companiesApi.getAll()
+      setCompanies(updatedCompanies)
+      toast.success('Empresa actualizada con éxito')
+    } catch (error) {
+      toast.error('Error al actualizar la lista de compañías')
+    }
     setEditingCompany(null)
   }
 
   if (loading) {
-    return <p>Cargando...</p>
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500 "></div>
+      </div>
+    )
   }
 
   if (error) {
@@ -53,8 +63,9 @@ const Companies = () => {
           onSubmit={async (formData) => {
             try {
               const newCompany = await companiesApi.create(formData)
+              const updatedCompanies = await companiesApi.getAll() // Obtener la lista actualizada
+              setCompanies(updatedCompanies) // Actualizar el estado con la lista completa
               toast.success('Compañía creada con éxito')
-              setCompanies([...companies, newCompany])
             } catch (error) {
               toast.error(error.message)
             }

@@ -25,21 +25,30 @@ const Categories = () => {
       if (success) {
         toast.success('Categoría eliminada correctamente')
         setCategories((prev) => prev.filter((category) => category.id !== id))
-        setDeletingId(null)
       } else {
         toast.error('Error al eliminar la categoría')
-        setDeletingId(null)
       }
+      setDeletingId(null)
     }
   }
 
-  const handleEditSuccess = () => {
-    toast.success('Categoría actualizada con éxito')
+  const handleEditSuccess = async () => {
+    try {
+      const updatedCategories = await categoriesApi.getAll()
+      setCategories(updatedCategories)
+      toast.success('Categoría actualizada con éxito')
+    } catch (error) {
+      toast.error('Error al actualizar la lista de categorías')
+    }
     setEditingCategory(null)
   }
 
   if (loading) {
-    return <p>Cargando...</p>
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500 "></div>
+      </div>
+    )
   }
 
   if (error) {
@@ -54,8 +63,9 @@ const Categories = () => {
           onSubmit={async (formData) => {
             try {
               const newCategory = await categoriesApi.create(formData)
+              const updatedCategories = await categoriesApi.getAll() // Obtener la lista actualizada
+              setCategories(updatedCategories) // Actualizar el estado con la lista completa
               toast.success('Categoría creada con éxito')
-              setCategories([...categories, newCategory])
             } catch (error) {
               toast.error(error.message)
             }

@@ -25,21 +25,30 @@ const Roles = () => {
       if (success) {
         toast.success('Rol eliminado correctamente')
         setRoles((prev) => prev.filter((role) => role.id !== id))
-        setDeletingId(null)
       } else {
         toast.error('Error al eliminar el rol')
-        setDeletingId(null)
       }
+      setDeletingId(null)
     }
   }
 
-  const handleEditSuccess = () => {
-    toast.success('Rol actualizado con éxito')
+  const handleEditSuccess = async () => {
+    try {
+      const updatedRoles = await rolesApi.getAll()
+      setRoles(updatedRoles)
+      toast.success('Rol actualizado con éxito')
+    } catch (error) {
+      toast.error('Error al actualizar la lista de roles')
+    }
     setEditingRole(null)
   }
 
   if (loading) {
-    return <p>Cargando...</p>
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500 "></div>
+      </div>
+    )
   }
 
   if (error) {
@@ -54,8 +63,9 @@ const Roles = () => {
           onSubmit={async (formData) => {
             try {
               const newRole = await rolesApi.create(formData)
+              const updatedRoles = await rolesApi.getAll() // Obtener la lista actualizada
+              setRoles(updatedRoles) // Actualizar el estado con la lista completa
               toast.success('Rol creado con éxito')
-              setRoles([...roles, newRole])
             } catch (error) {
               toast.error(error.message)
             }

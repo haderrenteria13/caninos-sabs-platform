@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
 
 const FormCompanies = ({ company = null, onSubmit }) => {
     const [formData, setFormData] = useState({ name: '', nit: '', address: '', phone: '', email: '' })
@@ -22,7 +23,7 @@ const FormCompanies = ({ company = null, onSubmit }) => {
         setError(null)
         try {
             await onSubmit(formData)
-            alert(company ? 'Empresa actualizada con éxito' : 'Empresa creada con éxito')
+            toast.done(company ? 'Empresa actualizada con éxito' : 'Empresa creada con éxito')
             setFormData({ name: '', nit: '', address: '', phone: '', email: '' })
         } catch (error) {
             setError(error.message)
